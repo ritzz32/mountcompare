@@ -11,11 +11,6 @@ def main():
 
     compare_state_log(host_mounts, ['pre', 'post'])
 
-    # for host in host_mounts:
-    #     print(host)
-    #     print(host_mounts[host].mounts)
-    #     print(host_mounts[host].symlinks)
-
 
 def parse_state_log(log_file, host_mounts, state):
     host = False

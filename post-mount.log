@@ -6,7 +6,7 @@ dev-test-service-group6-app2
 ##################################
 dev-test-service-group4-app1
 ##################################
-//st-cwanfs1/cwanfs-active	/mnt/cwanfs	cifs	credentials=/root/.smbcredentials,file_mode=0777,dir_mode=0777	0	0
+//st-cwanfs2/cwanfs-active	/mnt/cwanfs	cifs	credentials=/root/.smbcredentials,file_mode=0777,dir_mode=0777	0	0
 //st-cwanfs1/Prospectus	/mnt/cwanfs-prospectus	cifs	credentials=/root/.smbcredentials,file_mode=0777,dir_mode=0777	0	0
 total 0
 lrwxrwxrwx 1 root root 30 Jan 20 16:43 custodydata -> /mnt/cwanfs/Active/CustodyData

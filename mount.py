@@ -9,10 +9,12 @@ def main():
     parse_state_log(start_state_log, host_mounts, 'pre')
     parse_state_log(end_state_log, host_mounts, 'post')
 
-    for host in host_mounts:
-        print(host)
-        print(host_mounts[host].mounts)
-        print(host_mounts[host].symlinks)
+    compare_state_log(host_mounts, ['pre', 'post'])
+
+    # for host in host_mounts:
+    #     print(host)
+    #     print(host_mounts[host].mounts)
+    #     print(host_mounts[host].symlinks)
 
 
 def parse_state_log(log_file, host_mounts, state):
@@ -22,7 +24,7 @@ def parse_state_log(log_file, host_mounts, state):
 
         re_section = re.compile('#{34}')
         re_host = re.compile('[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z]*[0-9]*')
-        re_fstab = re.compile('^.*cifs.*')
+        re_fstab = re.compile('^(.*)\\t(.*)\\tcredentials=')
         re_symlink = re.compile('([a-zA-Z0-9]*)\s->\s(.*?)(?:\\n)?$')
 
         if re_section.search(line):
@@ -31,11 +33,14 @@ def parse_state_log(log_file, host_mounts, state):
         elif re_host.search(line):
             host = line
             if host not in host_mounts:
-                host_mounts[host] = HostMounts()
+                host_mounts[host] = HostMounts(host)
 
         elif re_fstab.search(line):
             if host:
-                host_mounts[host].add_mount(line, state)
+                fstab_data = re_fstab.search(line)
+                fstab_vol = fstab_data.group(1)
+                fstab_fstype = fstab_data.group(2)
+                host_mounts[host].add_mount(fstab_vol, fstab_fstype, state)
 
         elif re_symlink.search(line):
             if host:
@@ -46,9 +51,16 @@ def parse_state_log(log_file, host_mounts, state):
                 pass
 
 
+def compare_state_log(host_mounts, states):
+    for host in host_mounts:
+        host_mounts[host].compare_mounts(states)
+        host_mounts[host].compare_symlinks(states)
+
+
 class HostMounts(object):
 
-    def __init__(self):
+    def __init__(self, host_name):
+        self.host_name = host_name
         self.mounts = {
             'pre': [],
             'post': []
@@ -58,11 +70,27 @@ class HostMounts(object):
             'post': []
         }
 
-    def add_mount(self, mount_data, state):
-            self.mounts[state].append(mount_data)
+    def add_mount(self, volume, fstype, state):
+            self.mounts[state].append({'volume': volume, 'fstype': fstype})
+
+    def compare_mounts(self, states):
+        for a in range(0, len(states)):
+            for b in range(a, len(states)):
+                if self.mounts[states[a]] != self.mounts[states[b]]:
+                    print('Host: {} \n {}{} \n {}{}'.format(
+                        self.host_name, states[a], self.mounts[states[a]], states[b], self.mounts[states[b]]
+                    ))
 
     def add_symlink(self, name, target, state):
             self.symlinks[state].append({'name': name, 'target': target})
+
+    def compare_symlinks(self, states):
+        for a in range(0, len(states)):
+            for b in range(a, len(states)):
+                if self.symlinks[states[a]] != self.symlinks[states[b]]:
+                    print('Host: {} \n {}{} \n {}{}'.format(
+                        self.host_name, states[a], self.symlinks[states[a]], states[b], self.symlinks[states[b]]
+                    ))
 
     @property
     def mounts(self):

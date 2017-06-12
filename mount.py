@@ -3,11 +3,17 @@ import re
 
 def main():
     start_state_log = open('pre-mount.log', 'r')
+    host_mounts = {}
 
-    parse_state_log(start_state_log)
+    parse_state_log(start_state_log, host_mounts)
+
+    for host in host_mounts:
+        print(host)
+        host_mounts[host].print_mounts()
+        host_mounts[host].print_symlinks()
 
 
-def parse_state_log(log_file):
+def parse_state_log(log_file, host_mounts):
     host = False
 
     for line in log_file:
@@ -22,21 +28,45 @@ def parse_state_log(log_file):
 
         elif re.search(re_host_match, line):
             host = line
+            if host not in host_mounts:
+                host_mounts[host] = HostMounts(host)
 
         elif re.search(re_fstab_match, line):
-            print('{} {}'.format(host, line))
+            if host:
+                host_mounts[host].add_mount(line, 'pre')
 
         elif re.search(re_symlink_match, line):
-            print('{} {}'.format(host, line))
+            if host:
+                host_mounts[host].add_symlink(line, 'pre')
 
 
 class HostMounts:
 
-    def __init__(self, log_data_block):
-        self.log_data_block =  log_data_block
+    def __init__(self, test_string):
+        self.test_string = test_string
+        self.mounts = {
+            'pre': [],
+            'post': []
+        }
+        self.symlinks = {
+            'pre': [],
+            'post': []
+        }
 
-    def parse_data_block(self):
-        print("Test")
+    def add_mount(self, mount_data, state):
+            self.mounts[state].append(mount_data)
+
+    def print_mounts(self):
+        print(self.mounts)
+
+    def add_symlink(self, mount_data, state):
+            self.symlinks[state].append(mount_data)
+
+    def print_symlinks(self):
+        print(self.symlinks)
+
 
 if __name__ == "__main__":
     main()
+
+

@@ -1,4 +1,6 @@
 import re
+from deepdiff import DeepDiff
+from pprint import pprint
 
 
 def main():
@@ -18,7 +20,7 @@ def parse_state_log(log_file, host_mounts, state):
     for line in log_file:
 
         re_section = re.compile('#{34}')
-        re_host = re.compile('[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z]*[0-9]*')
+        re_host = re.compile('([a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z]*[0-9]*)')
         re_fstab = re.compile('^(.*)\\t(.*)\\tcredentials=')
         re_symlink = re.compile('([a-zA-Z0-9]*)\s->\s(.*?)(?:\\n)?$')
 
@@ -26,7 +28,7 @@ def parse_state_log(log_file, host_mounts, state):
             pass
 
         elif re_host.search(line):
-            host = line
+            host = re_host.search(line).group(1)
             if host not in host_mounts:
                 host_mounts[host] = HostMounts(host)
 
@@ -57,35 +59,47 @@ class HostMounts(object):
     def __init__(self, host_name):
         self.host_name = host_name
         self.mounts = {
-            'pre': [],
-            'post': []
+            'pre': {},
+            'post': {}
         }
         self.symlinks = {
-            'pre': [],
-            'post': []
+            'pre': {},
+            'post': {}
         }
 
     def add_mount(self, volume, fstype, state):
-            self.mounts[state].append({'volume': volume, 'fstype': fstype})
+            self.mounts[state][volume] = {'volume': volume, 'fstype': fstype}
 
     def compare_mounts(self, states):
         for a in range(0, len(states)):
             for b in range(a, len(states)):
-                if self.mounts[states[a]] != self.mounts[states[b]]:
-                    print('Host: {}\n  {}: {}\n  {}: {}\n'.format(
-                        self.host_name, states[a], self.mounts[states[a]], states[b], self.mounts[states[b]]
-                    ))
+                diff = self.compare_dict(self.mounts[states[a]], self.mounts[states[b]])
+                if diff != {}:
+                    pprint({self.host_name: diff}, indent=2)
+                    print('\n')
 
     def add_symlink(self, name, target, state):
-            self.symlinks[state].append({'name': name, 'target': target})
+            self.symlinks[state][name] = {'name': name, 'target': target}
 
     def compare_symlinks(self, states):
         for a in range(0, len(states)):
             for b in range(a, len(states)):
-                if self.symlinks[states[a]] != self.symlinks[states[b]]:
-                    print('Host: {}\n  {}: {}\n  {}: {}\n'.format(
-                        self.host_name, states[a], self.symlinks[states[a]], states[b], self.symlinks[states[b]]
-                    ))
+                diff = self.compare_dict(self.symlinks[states[a]], self.symlinks[states[b]])
+                if diff != {}:
+                    pprint({self.host_name: diff}, indent=2)
+                    print('\n')
+
+    @staticmethod
+    def compare_dict(dict_a, dict_b):
+        return DeepDiff(dict_a, dict_b)
+
+    @property
+    def host_name(self):
+        return self.__host_name
+
+    @host_name.setter
+    def host_name(self, value):
+        self.__host_name = value
 
     @property
     def mounts(self):

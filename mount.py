@@ -72,7 +72,7 @@ class HostMounts(object):
         for a in range(0, len(states)):
             for b in range(a, len(states)):
                 if self.mounts[states[a]] != self.mounts[states[b]]:
-                    print('Host: {} \n {}{} \n {}{}'.format(
+                    print('Host: {}\n  {}: {}\n  {}: {}\n'.format(
                         self.host_name, states[a], self.mounts[states[a]], states[b], self.mounts[states[b]]
                     ))
 
@@ -83,7 +83,7 @@ class HostMounts(object):
         for a in range(0, len(states)):
             for b in range(a, len(states)):
                 if self.symlinks[states[a]] != self.symlinks[states[b]]:
-                    print('Host: {} \n {}{} \n {}{}'.format(
+                    print('Host: {}\n  {}: {}\n  {}: {}\n'.format(
                         self.host_name, states[a], self.symlinks[states[a]], states[b], self.symlinks[states[b]]
                     ))
 

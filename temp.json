@@ -1,0 +1,35 @@
+
+
+{ 'st-hq-halo-forerunner-app2': { 'dictionary_item_added': { "root['CustodyData']"},
+  'values_changed': { "root['H']['target']": { 'new_value': '/mnt/hdrive/',
+    'old_value': '/mnt/hdrive'},
+    "root['public']['target']": { 'new_value': '/mnt/hdrive/Development '
+      'Public',
+      'old_value': '/mnt/hdrive/Development '
+      'Public/'}}}}
+
+
+{ 'st-hq-halo-roster-app4': { 'dictionary_item_added': { "root['//dev-netapp01-n1/vol_soda_jobs\t"
+  "/mnt/sodasource']"}}}
+
+
+{ 'st-hq-halo-roster-app4': { 'dictionary_item_added': { "root['CustodyData']",
+  "root['SecurityData']"},
+  'values_changed': { "root['SourceFiles']['target']": { 'new_value': '/mnt/sodasource/SourceFiles',
+    'old_value': '/mnt/vol_soda_jobs/SourceFiles/staging'}}}}
+
+
+{ 'st-hq-halo-battlenet-app2': { 'dictionary_item_added': { "root['//dev-netapp01-n1/vol_soda_jobs\t"
+  "/mnt/sodasource']"}}}
+
+
+{ 'st-hq-halo-battlenet-app2': { 'dictionary_item_added': { "root['SecurityData']",
+  "root['manualcustodydata']"},
+  'values_changed': { "root['SourceFiles']['target']": { 'new_value': '/mnt/sodasource/SourceFiles',
+    'old_value': '/mnt/vol_soda_jobs/SourceFiles/staging'},
+    "root['tradingdata']['target']": { 'new_value': '/mnt/cwanfs/Active/TradingData/${tier}',
+      'old_value': '/mnt/cwanfs/Active/TradingData'}}}}
+
+
+
+Process finished with exit code 0

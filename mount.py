@@ -20,7 +20,7 @@ def parse_state_log(log_file, host_mounts, state):
     for line in log_file:
 
         re_section = re.compile('#{34}')
-        re_host = re.compile('([a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z]*[0-9]*)')
+        re_host = re.compile('([a-zA-Z0-9]*-[a-zA-Z0-9]*-[a-zA-Z0-9]*-.*)')
         re_fstab = re.compile('^(.*)\\t(.*)\\tcredentials=')
         re_symlink = re.compile('([a-zA-Z0-9]*)\s->\s(.*?)(?:\\n)?$')
 

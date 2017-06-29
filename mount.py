@@ -4,8 +4,8 @@ from pprint import pprint
 
 
 def main():
-    start_state_log = open('st-pre-mount.log', 'r')
-    end_state_log = open('st-post-mount.log', 'r')
+    start_state_log = open('prod-pre-mount.log', 'r')
+    end_state_log = open('prod-post-mount.log', 'r')
     host_mounts = {}
 
     parse_state_log(start_state_log, host_mounts, 'pre')
